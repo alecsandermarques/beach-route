@@ -256,3 +256,24 @@ details.faq p{margin-top:.75rem;color:#5b5f66;line-height:1.65}
 .hero-perks li{flex-shrink:0;white-space:nowrap}
 @media (max-width:640px){ #hdr .h-\[72px\]{gap:.75rem} #hdr [data-nome]{font-size:19px} }
 section[id]{scroll-margin-top:76px}
+
+/* ================= MOBILE v3 ================= */
+.h2{font-size:clamp(30px,7.4vw,54px)}
+@media (max-width:640px){
+  .hero{min-height:92svh}
+  .hero-img{object-position:50% 78%}
+  #hdr .h-\[72px\]{height:64px}
+  #hdr img.w-11{width:40px;height:40px}
+  .chips{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;margin:0 -1.5rem;padding:0 1.5rem}
+  .chips::-webkit-scrollbar{display:none}
+  .chips .chip{flex-shrink:0}
+  .gal-head .gal-cats{justify-content:flex-start}
+  .gal-sec h4{font-size:20px}
+  .unit h3{font-size:28px}
+}
+@media (max-width:400px){
+  #hdr [data-nome]{font-size:18px}
+  .tab-desde{display:none}
+}
+
+@media (max-width:640px){ .hero{min-height:86svh} }

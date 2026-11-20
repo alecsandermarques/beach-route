@@ -40,8 +40,8 @@ tailwind.config = { theme: { extend: {
             sand:"#fdf9f4", "sand-2":"#f7efe5", "sand-3":"#f2dfcc", taupe:"#6c5b4d", ink:"#1c1c18", muted:"#5b5f66", ok:"#2f7d5b" },
   fontFamily: { serif:["Playfair Display","serif"], sans:["Plus Jakarta Sans","sans-serif"] } } } };
 </script>
-<link rel="stylesheet" href="styles.css?v=3"/>
-<script src="config.js?v=3"></script>
+<link rel="stylesheet" href="styles.css?v=4"/>
+<script src="config.js?v=4"></script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"LodgingBusiness","name":"Beach Route Canas","image":"https://alecsandermarques.github.io/beach-route/img/og.jpg","url":"https://alecsandermarques.github.io/beach-route/","telephone":"+55 48 99133-7746",
 "address":{"@type":"PostalAddress","streetAddress":"R. Hypólito Gregório Pereira, 595","addressLocality":"Florianópolis","addressRegion":"SC","addressCountry":"BR"},
@@ -63,15 +63,15 @@ tailwind.config = { theme: { extend: {
     </nav>
     <div class="flex items-center gap-2">
       <a data-wa="Olá! Vim pelo site." target="_blank" rel="noopener" class="hidden md:inline-flex items-center gap-1.5 text-[14px] font-semibold px-4 py-2.5 rounded-full hover:bg-black/5"><span class="ms">chat</span>WhatsApp</a>
-      <button data-open-cal class="bg-accent hover:bg-accent-dark text-white text-[14px] font-bold px-4 sm:px-5 py-2.5 rounded-full transition shadow-sm whitespace-nowrap">Ver datas</button>
+      <button data-open-cal class="hidden sm:inline-flex bg-accent hover:bg-accent-dark text-white text-[14px] font-bold px-5 py-2.5 rounded-full transition shadow-sm whitespace-nowrap">Ver datas</button>
       <button id="menuBtn" class="lg:hidden w-11 h-11 -mr-2 rounded-full flex items-center justify-center hover:bg-black/5" aria-label="Abrir menu"><span class="ms text-[26px]">menu</span></button>
     </div>
   </div>
 </header>
 
 <!-- ================= HERO ================= -->
-<section class="relative min-h-[100svh] flex flex-col justify-end text-white overflow-hidden">
-  <img src="img/b02.jpg" alt="Vista da cobertura da Beach Route em Canasvieiras" class="absolute inset-0 w-full h-full object-cover scale-105 hero-zoom" fetchpriority="high"/>
+<section class="hero relative min-h-[100svh] flex flex-col justify-end text-white overflow-hidden">
+  <img src="img/b02.jpg" alt="Vista da cobertura da Beach Route em Canasvieiras" class="hero-img absolute inset-0 w-full h-full object-cover scale-105 hero-zoom" fetchpriority="high"/>
   <div class="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/40 to-primary-dark/30"></div>
 
   <div class="relative w-full max-w-7xl mx-auto px-5 lg:px-8 pt-24 sm:pt-32 pb-6 sm:pb-8">
@@ -83,7 +83,12 @@ tailwind.config = { theme: { extend: {
     <p class="mt-4 sm:mt-5 text-[17px] sm:text-lg md:text-xl max-w-xl text-white/85 leading-relaxed">Apartamentos a poucos passos da praia de Canasvieiras<span class="hidden sm:inline">, com cozinha completa, Wi-Fi e estacionamento</span>. Reserve <strong class="text-white">direto com a Eliane e o Anderson</strong>, sem taxa.</p>
 
     <!-- Booking bar -->
-    <div class="mt-6 sm:mt-9 bg-white text-ink rounded-[28px] p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,.5)] max-w-4xl grid grid-cols-2 md:grid-cols-[1fr_1fr_1fr_auto] gap-1">
+    <button data-open-cal class="sm:hidden mt-6 w-full bg-white text-ink rounded-[24px] p-2 pl-4 flex items-center gap-2.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.5)] text-left">
+      <span class="ms text-accent text-[26px]">calendar_month</span>
+      <span class="flex-1 min-w-0 leading-tight"><b class="block text-[15px] truncate" data-m-dates>Escolha as datas</b><span class="block text-[13px] text-muted truncate" data-m-guests>2 adultos</span></span>
+      <span class="bg-accent text-white font-bold rounded-[18px] px-4 py-3.5 text-[15px] whitespace-nowrap">Ver preço</span>
+    </button>
+    <div class="hidden sm:grid mt-9 bg-white text-ink rounded-[28px] p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,.5)] max-w-4xl grid-cols-2 md:grid-cols-[1fr_1fr_1fr_auto] gap-1">
       <button data-open-cal="ci" class="bb-field text-left"><span class="bb-label">Check-in</span><span class="bb-value" data-ci-label>Adicionar data</span></button>
       <button data-open-cal="co" class="bb-field text-left md:border-l border-black/5"><span class="bb-label">Check-out</span><span class="bb-value" data-co-label>Adicionar data</span></button>
       <button data-open-guests class="bb-field text-left col-span-2 md:col-span-1 md:border-l border-black/5"><span class="bb-label">Hóspedes</span><span class="bb-value" data-guests-label>2 adultos</span></button>
@@ -361,10 +366,13 @@ tailwind.config = { theme: { extend: {
 <!-- ================= GALERIA ================= -->
 <div id="gal" class="modal" aria-hidden="true">
   <div class="gal-panel">
-    <div class="sticky top-0 z-10 bg-white/95 backdrop-blur flex items-center justify-between gap-4 px-5 md:px-8 h-16 border-b border-black/5">
-      <button data-close class="flex items-center gap-1 font-semibold"><span class="ms">arrow_back</span><span class="hidden sm:inline">Voltar</span></button>
-      <div class="gal-cats" id="galCats"></div>
-      <button data-gal-book class="btn-accent !py-2.5 !px-5 !text-sm shrink-0">Reservar</button>
+    <div class="gal-head sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-black/5">
+      <div class="flex items-center justify-between gap-4 px-4 md:px-8 h-16">
+        <button data-close class="flex items-center gap-1 font-semibold h-11"><span class="ms text-[26px]">arrow_back</span><span class="hidden sm:inline">Voltar</span></button>
+        <div class="gal-cats hidden sm:flex" id="galCats"></div>
+        <button data-gal-book class="btn-accent !py-2.5 !px-5 !text-sm shrink-0">Reservar</button>
+      </div>
+      <div class="gal-cats sm:hidden px-4 pb-3" id="galCatsM"></div>
     </div>
     <div class="max-w-5xl mx-auto px-5 md:px-8 py-8">
       <h3 class="font-serif text-3xl text-primary mb-6" id="galTitle"></h3>
@@ -387,6 +395,6 @@ tailwind.config = { theme: { extend: {
 </div>
 
 <div id="toast" class="toast"></div>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

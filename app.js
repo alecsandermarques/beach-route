@@ -136,7 +136,7 @@
           <h3 class="font-serif text-3xl text-primary">${U.nome}</h3>
           <p class="text-muted mt-2 leading-relaxed">${T.desc}</p>
         </div>
-        <div class="flex flex-wrap gap-2">${T.chips.map(([i, t]) => `<span class="chip"><span class="ms">${i}</span>${t}</span>`).join("")}</div>
+        <div class="chips flex flex-wrap gap-2">${T.chips.map(([i, t]) => `<span class="chip"><span class="ms">${i}</span>${t}</span>`).join("")}</div>
         <div class="mt-auto pt-5 border-t border-black/5 flex flex-wrap items-center justify-between gap-4">
           <div><p class="text-xs text-muted">a partir de</p><p class="text-2xl font-extrabold text-primary">${brl(fromPrice(u))}<span class="text-sm font-medium text-muted"> /noite</span></p></div>
           <div class="flex gap-2 w-full sm:w-auto">
@@ -184,13 +184,14 @@
     galUnit = u;
     $("#galTitle").textContent = `${C.unidades[u].nome} · ${total(u)} fotos`;
     const cats = Object.keys(FOTOS[u]);
-    $("#galCats").innerHTML = cats.map((c, i) => `<button data-cat="${i}" class="${i ? "" : "on"}">${c}</button>`).join("");
+    const catsHtml = cats.map((c, i) => `<button data-cat="${i}" class="${i ? "" : "on"}">${c}</button>`).join("");
+    $("#galCats").innerHTML = catsHtml; $("#galCatsM").innerHTML = catsHtml;
     $("#galGrid").innerHTML = cats.map((c, i) => `
       <section class="gal-sec" id="gs${i}"><h4>${c}</h4>
         <div class="gal-grid">${FOTOS[u][c].map((f) => `<button data-view="${u}" data-id="${f}"><img src="img/${f}.jpg" loading="lazy" alt="${c}"/></button>`).join("")}</div>
       </section>`).join("");
-    $$("#galCats button").forEach((b) => (b.onclick = () => {
-      $$("#galCats button").forEach((x) => x.classList.toggle("on", x === b));
+    $$(".gal-cats button").forEach((b) => (b.onclick = () => {
+      $$(".gal-cats button").forEach((x) => x.classList.toggle("on", x.dataset.cat === b.dataset.cat));
       $("#gs" + b.dataset.cat).scrollIntoView({ behavior: "smooth" });
     }));
     $(".gal-panel").scrollTop = 0;
@@ -199,7 +200,7 @@
   $(".gal-panel").addEventListener("scroll", () => {
     const secs = $$(".gal-sec"); let cur = 0;
     secs.forEach((s, i) => { if (s.getBoundingClientRect().top < 140) cur = i; });
-    $$("#galCats button").forEach((b, i) => b.classList.toggle("on", i === cur));
+    $$(".gal-cats button").forEach((b) => { const on = +b.dataset.cat === cur; b.classList.toggle("on", on); if (on && b.parentElement.id === "galCatsM") b.scrollIntoView({ inline: "center", block: "nearest" }); });
   }, { passive: true });
   $("[data-gal-book]").onclick = () => { closeModal("gal"); openBook({ unit: galUnit }); };
 
@@ -265,7 +266,7 @@
   function renderTabs() {
     $("#unitTabs").innerHTML = Object.keys(FOTOS).map((u) => `
       <button class="unit-tab ${S.unit === u ? "on" : ""}" data-tab="${u}">
-        <img src="img/${DESTAQUE[u][0]}.jpg" alt=""/><span><b>${C.unidades[u].curto}</b><small>desde ${brl(fromPrice(u))}/noite</small></span>
+        <img src="img/${DESTAQUE[u][0]}.jpg" alt=""/><span><b>${C.unidades[u].curto}</b><small><span class="tab-desde">desde </span>${brl(fromPrice(u))}/noite</small></span>
       </button>`).join("");
     $$("[data-tab]").forEach((b) => (b.onclick = () => {
       S.unit = b.dataset.tab;
@@ -446,6 +447,8 @@
     ci.textContent = S.ci ? fmtShort(S.ci) : "Adicionar data"; ci.classList.toggle("set", !!S.ci);
     co.textContent = S.co ? fmtShort(S.co) : "Adicionar data"; co.classList.toggle("set", !!S.co);
     const gl = $("[data-guests-label]"); gl.textContent = guestsTxt(); gl.classList.add("set");
+    $("[data-m-dates]").textContent = S.ci && S.co ? `${fmtShort(S.ci)} → ${fmtShort(S.co)}` : S.ci ? `${fmtShort(S.ci)} → ?` : "Escolha as datas";
+    $("[data-m-guests]").textContent = (S.ci && S.co ? `${nightsBetween(S.ci, S.co)} noites · ` : "") + guestsTxt();
     if (S.ci && S.co) {
       const q = quote(S.unit, S.ci, S.co);
       $("[data-mbar-price]").textContent = `${brl(q.total)} total`;
