@@ -40,8 +40,8 @@ tailwind.config = { theme: { extend: {
             sand:"#fdf9f4", "sand-2":"#f7efe5", "sand-3":"#f2dfcc", taupe:"#6c5b4d", ink:"#1c1c18", muted:"#5b5f66", ok:"#2f7d5b" },
   fontFamily: { serif:["Playfair Display","serif"], sans:["Plus Jakarta Sans","sans-serif"] } } } };
 </script>
-<link rel="stylesheet" href="styles.css"/>
-<script src="config.js"></script>
+<link rel="stylesheet" href="styles.css?v=3"/>
+<script src="config.js?v=3"></script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"LodgingBusiness","name":"Beach Route Canas","image":"https://alecsandermarques.github.io/beach-route/img/og.jpg","url":"https://alecsandermarques.github.io/beach-route/","telephone":"+55 48 99133-7746",
 "address":{"@type":"PostalAddress","streetAddress":"R. Hypólito Gregório Pereira, 595","addressLocality":"Florianópolis","addressRegion":"SC","addressCountry":"BR"},
@@ -63,7 +63,8 @@ tailwind.config = { theme: { extend: {
     </nav>
     <div class="flex items-center gap-2">
       <a data-wa="Olá! Vim pelo site." target="_blank" rel="noopener" class="hidden md:inline-flex items-center gap-1.5 text-[14px] font-semibold px-4 py-2.5 rounded-full hover:bg-black/5"><span class="ms">chat</span>WhatsApp</a>
-      <button data-open-cal class="bg-accent hover:bg-accent-dark text-white text-[14px] font-bold px-5 py-2.5 rounded-full transition shadow-sm">Ver datas</button>
+      <button data-open-cal class="bg-accent hover:bg-accent-dark text-white text-[14px] font-bold px-4 sm:px-5 py-2.5 rounded-full transition shadow-sm whitespace-nowrap">Ver datas</button>
+      <button id="menuBtn" class="lg:hidden w-11 h-11 -mr-2 rounded-full flex items-center justify-center hover:bg-black/5" aria-label="Abrir menu"><span class="ms text-[26px]">menu</span></button>
     </div>
   </div>
 </header>
@@ -73,16 +74,16 @@ tailwind.config = { theme: { extend: {
   <img src="img/b02.jpg" alt="Vista da cobertura da Beach Route em Canasvieiras" class="absolute inset-0 w-full h-full object-cover scale-105 hero-zoom" fetchpriority="high"/>
   <div class="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/40 to-primary-dark/30"></div>
 
-  <div class="relative w-full max-w-7xl mx-auto px-5 lg:px-8 pt-32 pb-8">
-    <a href="#avaliacoes" data-rating-badge class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-[13px] font-semibold mb-6 hover:bg-white/25 transition">
+  <div class="relative w-full max-w-7xl mx-auto px-5 lg:px-8 pt-24 sm:pt-32 pb-6 sm:pb-8">
+    <a href="#avaliacoes" data-rating-badge class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-[13px] font-semibold mb-4 sm:mb-6 hover:bg-white/25 transition">
       <span class="text-[#ffcf5c]">★★★★★</span><span data-rating-text></span>
     </a>
-    <p class="text-[12px] font-bold tracking-[.2em] uppercase text-sun mb-3">Pousada Beach Route · Canasvieiras</p>
+    <p class="hidden sm:block text-[12px] font-bold tracking-[.2em] uppercase text-sun mb-3">Pousada Beach Route · Canasvieiras</p>
     <h1 class="font-serif text-[44px] leading-[1.02] sm:text-6xl lg:text-[84px] max-w-4xl tracking-tight">Sua base perfeita<br class="hidden sm:block"/> <em class="text-sand-3">em Floripa</em>.</h1>
-    <p class="mt-5 text-lg md:text-xl max-w-xl text-white/85 leading-relaxed">Apartamentos com cozinha completa a poucos passos da praia de Canasvieiras. Wi-Fi, estacionamento e reserva <strong class="text-white">direto com a Eliane e o Anderson</strong> — sem taxa de plataforma.</p>
+    <p class="mt-4 sm:mt-5 text-[17px] sm:text-lg md:text-xl max-w-xl text-white/85 leading-relaxed">Apartamentos a poucos passos da praia de Canasvieiras<span class="hidden sm:inline">, com cozinha completa, Wi-Fi e estacionamento</span>. Reserve <strong class="text-white">direto com a Eliane e o Anderson</strong>, sem taxa.</p>
 
     <!-- Booking bar -->
-    <div class="mt-9 bg-white text-ink rounded-[28px] p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,.5)] max-w-4xl grid grid-cols-2 md:grid-cols-[1fr_1fr_1fr_auto] gap-1">
+    <div class="mt-6 sm:mt-9 bg-white text-ink rounded-[28px] p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,.5)] max-w-4xl grid grid-cols-2 md:grid-cols-[1fr_1fr_1fr_auto] gap-1">
       <button data-open-cal="ci" class="bb-field text-left"><span class="bb-label">Check-in</span><span class="bb-value" data-ci-label>Adicionar data</span></button>
       <button data-open-cal="co" class="bb-field text-left md:border-l border-black/5"><span class="bb-label">Check-out</span><span class="bb-value" data-co-label>Adicionar data</span></button>
       <button data-open-guests class="bb-field text-left col-span-2 md:col-span-1 md:border-l border-black/5"><span class="bb-label">Hóspedes</span><span class="bb-value" data-guests-label>2 adultos</span></button>
@@ -91,14 +92,14 @@ tailwind.config = { theme: { extend: {
       </button>
     </div>
 
-    <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[14px] text-white/85">
+    <ul class="hero-perks mt-5 sm:mt-6 flex sm:flex-wrap gap-x-6 gap-y-2 text-[14px] text-white/85">
       <li class="flex items-center gap-1.5"><span class="ms text-[#9be3c1]">check_circle</span>Sem taxa de plataforma</li>
       <li class="flex items-center gap-1.5"><span class="ms text-[#9be3c1]">check_circle</span>Estacionamento</li>
       <li class="flex items-center gap-1.5"><span class="ms text-[#9be3c1]">check_circle</span>Atendimento direto pelo WhatsApp</li>
       <li class="flex items-center gap-1.5"><span class="ms text-[#9be3c1]">check_circle</span><span data-praia></span> da praia</li>
     </ul>
   </div>
-  <a href="#acomodacoes" class="relative mx-auto mb-5 ms text-white/70 animate-bounce text-3xl" aria-label="Rolar">expand_more</a>
+  <a href="#acomodacoes" class="relative mx-auto mb-5 ms text-white/70 animate-bounce text-3xl hidden sm:block" aria-label="Rolar">expand_more</a>
 </section>
 
 <!-- ================= ACOMODAÇÕES ================= -->
@@ -306,11 +307,28 @@ tailwind.config = { theme: { extend: {
   <svg viewBox="0 0 32 32" class="w-7 h-7 fill-white"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.8.9 3.9.8a3.3 3.3 0 0 0 2.2-1.5 2.7 2.7 0 0 0 .2-1.5c-.1-.2-.3-.3-.7-.4z"/></svg>
 </a>
 
+<!-- ================= MENU (celular) ================= -->
+<div id="menu" class="modal" aria-hidden="true">
+  <div class="modal-bg" data-close></div>
+  <nav class="menu-panel" aria-label="Menu">
+    <div class="flex items-center justify-between mb-6">
+      <span class="flex items-center gap-2.5"><img src="img/logo.png" alt="" class="w-10 h-10 rounded-full"/><b class="font-serif text-xl text-primary" data-nome></b></span>
+      <button data-close class="w-11 h-11 rounded-full hover:bg-black/5 ms text-2xl" aria-label="Fechar">close</button>
+    </div>
+    <a href="#acomodacoes">Acomodações</a><a href="#avaliacoes">Avaliações</a><a href="#comodidades">Comodidades</a><a href="#localizacao">Localização</a><a href="#faq">Dúvidas</a>
+    <div class="mt-auto grid gap-3 pt-6">
+      <button data-open-cal class="btn-accent w-full">Ver datas e preços</button>
+      <a data-wa="Olá! Vim pelo site." target="_blank" rel="noopener" class="w-full inline-flex justify-center items-center gap-2 py-4 rounded-full font-bold bg-[#25D366] text-white"><span class="ms">chat</span> WhatsApp</a>
+    </div>
+  </nav>
+</div>
+
 <!-- ================= BOOKING DRAWER (calendário + resumo) ================= -->
 <div id="book" class="modal" aria-hidden="true">
   <div class="modal-bg" data-close></div>
   <div class="book-panel" role="dialog" aria-label="Reservar">
-    <div class="flex items-center justify-between px-6 pt-5 pb-3 border-b border-black/5">
+    <div class="book-grip" aria-hidden="true"><i></i></div>
+    <div class="flex items-center justify-between px-6 pt-5 pb-3 border-b border-black/5 book-top">
       <div><h3 class="font-serif text-2xl text-primary" data-book-title>Escolha suas datas</h3><p class="text-sm text-muted" data-book-sub>Selecione o check-in</p></div>
       <button data-close class="w-10 h-10 rounded-full hover:bg-black/5 ms" aria-label="Fechar">close</button>
     </div>
@@ -336,6 +354,7 @@ tailwind.config = { theme: { extend: {
         <div id="summary"></div>
       </aside>
     </div>
+    <div id="bookFoot" class="book-foot"></div>
   </div>
 </div>
 
@@ -368,6 +387,6 @@ tailwind.config = { theme: { extend: {
 </div>
 
 <div id="toast" class="toast"></div>
-<script src="app.js"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

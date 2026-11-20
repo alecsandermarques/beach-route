@@ -112,6 +112,8 @@
     mbar.style.transform = scrollY > innerHeight * 0.7 ? "translateY(0)" : "";
   };
   addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  $("#menuBtn").onclick = () => openModal("menu");
+  $$("#menu a, #menu [data-open-cal]").forEach((a) => a.addEventListener("click", () => closeModal("menu")));
 
   // =================================================================
   //  CARDS DAS UNIDADES
@@ -123,6 +125,7 @@
       <div class="car">
         <div class="car-track">${imgs.map((f, i) => `<img src="img/${f}.jpg" alt="${U.nome} — foto ${i + 1}" loading="${i ? "lazy" : "eager"}" data-view="${u}" data-id="${f}"/>`).join("")}</div>
         <span class="car-tag">${T.tag}</span>
+        <span class="car-count">1/${imgs.length}</span>
         <button class="car-btn left-3 ms" data-car="-1" aria-label="Anterior">chevron_left</button>
         <button class="car-btn right-3 ms" data-car="1" aria-label="Próxima">chevron_right</button>
         <div class="car-dots">${imgs.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("")}</div>
@@ -149,7 +152,8 @@
   $$(".car").forEach((car) => {
     const tr = $(".car-track", car), dots = $$(".car-dots i", car), [prev, next] = $$("[data-car]", car);
     const idx = () => Math.round(tr.scrollLeft / tr.clientWidth);
-    const upd = () => { const i = idx(); dots.forEach((d, j) => d.classList.toggle("on", i === j)); prev.disabled = i === 0; next.disabled = i === dots.length - 1; };
+    const cnt = $(".car-count", car);
+    const upd = () => { const i = idx(); cnt.textContent = `${i + 1}/${dots.length}`; dots.forEach((d, j) => d.classList.toggle("on", i === j)); prev.disabled = i === 0; next.disabled = i === dots.length - 1; };
     tr.addEventListener("scroll", () => requestAnimationFrame(upd), { passive: true });
     $$("[data-car]", car).forEach((b) => (b.onclick = (e) => { e.stopPropagation(); tr.scrollTo({ left: (idx() + +b.dataset.car) * tr.clientWidth }); }));
     upd();
@@ -210,6 +214,7 @@
     vShow(V.i); openModal("viewer");
   }
   function vShow(i) {
+    $("#vImg").style.transform = ""; $("#vImg").style.transformOrigin = "";
     V.i = (i + V.list.length) % V.list.length;
     const p = V.list[V.i], img = $("#vImg");
     img.style.opacity = 0;
@@ -225,8 +230,18 @@
   // swipe
   (() => {
     const st = $("#vStage"), img = $("#vImg"); let x0 = null, dx = 0;
-    st.addEventListener("pointerdown", (e) => { x0 = e.clientX; dx = 0; img.style.transition = "none"; });
-    st.addEventListener("pointermove", (e) => { if (x0 === null) return; dx = e.clientX - x0; img.style.transform = `translateX(${dx}px)`; });
+    let zoomed = false, lastTap = 0;
+    const unzoom = () => { zoomed = false; img.style.transform = ""; img.style.cursor = ""; };
+    st.addEventListener("pointerdown", (e) => {
+      const now = Date.now();
+      if (now - lastTap < 280) { // duplo toque = zoom
+        const r = img.getBoundingClientRect();
+        if (zoomed) unzoom(); else { zoomed = true; img.style.transformOrigin = `${e.clientX - r.left}px ${e.clientY - r.top}px`; img.style.transform = "scale(2.2)"; }
+        lastTap = 0; x0 = null; return;
+      }
+      lastTap = now; if (zoomed) return; x0 = e.clientX; dx = 0; img.style.transition = "none";
+    });
+    st.addEventListener("pointermove", (e) => { if (x0 === null || zoomed) return; dx = e.clientX - x0; img.style.transform = `translateX(${dx}px)`; });
     const end = () => {
       if (x0 === null) return; img.style.transition = ""; img.style.transform = "";
       if (Math.abs(dx) > 50) vGo(dx < 0 ? 1 : -1); else if (Math.abs(dx) < 5) { /* tap */ }
@@ -250,7 +265,7 @@
   function renderTabs() {
     $("#unitTabs").innerHTML = Object.keys(FOTOS).map((u) => `
       <button class="unit-tab ${S.unit === u ? "on" : ""}" data-tab="${u}">
-        <img src="img/${DESTAQUE[u][0]}.jpg" alt=""/><span><b>${C.unidades[u].curto}</b><small>a partir de ${brl(fromPrice(u))}</small></span>
+        <img src="img/${DESTAQUE[u][0]}.jpg" alt=""/><span><b>${C.unidades[u].curto}</b><small>desde ${brl(fromPrice(u))}/noite</small></span>
       </button>`).join("");
     $$("[data-tab]").forEach((b) => (b.onclick = () => {
       S.unit = b.dataset.tab;
@@ -265,15 +280,22 @@
     return true;
   }
 
+  const isMobile = () => matchMedia("(max-width:640px)").matches;
   function renderCal() {
     const v = S.view, now = new Date(), firstMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const months = [0, 1].map((o) => new Date(v.getFullYear(), v.getMonth() + o, 1));
+    const mob = isMobile();
+    // celular: meses empilhados (rolagem vertical); desktop: 2 meses com setas
+    const months = mob ? [...Array(12)].map((_, o) => new Date(firstMonth.getFullYear(), firstMonth.getMonth() + o, 1))
+                       : [0, 1].map((o) => new Date(v.getFullYear(), v.getMonth() + o, 1));
     const end = S.co || (S.ci && S.hover && S.hover > S.ci ? S.hover : null);
     const minN = S.ci ? rate(S.unit, S.ci).min : 0;
     const html = months.map((m) => {
       const y = m.getFullYear(), mo = m.getMonth(), days = new Date(y, mo + 1, 0).getDate(), off = m.getDay();
-      let cells = "DSTQQSS".split("").map((d) => `<div class="cal-dow">${d}</div>`).join("") + "<div></div>".repeat(off);
-      for (let d = 1; d <= days; d++) {
+      let start = 1;
+      if (mob && y === now.getFullYear() && mo === now.getMonth()) start = Math.max(1, now.getDate() - now.getDay());
+      const lead = start === 1 ? off : (new Date(y, mo, start).getDay());
+      let cells = (mob ? "" : "DSTQQSS".split("").map((d) => `<div class="cal-dow">${d}</div>`).join("")) + "<div></div>".repeat(lead);
+      for (let d = start; d <= days; d++) {
         const k = `${y}-${pad(mo + 1)}-${pad(d)}`, r = rate(S.unit, k);
         const past = k < todayK, blocked = isBlocked(S.unit, k);
         let cls = "cal-d";
@@ -288,13 +310,17 @@
       }
       return `<div class="cal-m"><h4>${MESES[mo]} ${y}</h4><div class="cal-grid">${cells}</div></div>`;
     }).join("");
-    $("#cal").innerHTML = `
+    const body = $(".book-body"), keep = body.scrollTop;
+    $("#cal").innerHTML = mob ? `
+      <div class="cal-sticky"><div class="cal-legend !mt-0"><span><i style="background:#6c5b4d"></i>diária em R$</span><span><i style="background:#e07b00"></i>alta temporada</span></div>
+      <div class="cal-grid">${"DSTQQSS".split("").map((d) => `<div class="cal-dow">${d}</div>`).join("")}</div></div>
+      <div class="cal-months">${html}</div>` : `
       <div class="cal-head"><button data-nav="-1" class="ms" ${v <= firstMonth ? "disabled" : ""} aria-label="Mês anterior">chevron_left</button><button data-nav="1" class="ms" aria-label="Próximo mês">chevron_right</button></div>
       <div class="cal-months">${html}</div>
-      <div class="cal-legend"><span><i style="background:#6c5b4d"></i>diária em R$</span><span><i style="background:#c86446"></i>alta temporada</span></div>`;
+      <div class="cal-legend"><span><i style="background:#6c5b4d"></i>diária em R$</span><span><i style="background:#e07b00"></i>alta temporada</span></div>`;
+    body.scrollTop = keep;
     $$("[data-nav]").forEach((b) => (b.onclick = () => {
-      const step = matchMedia("(max-width:640px)").matches ? 1 : 1;
-      S.view = new Date(v.getFullYear(), v.getMonth() + +b.dataset.nav * step, 1); renderCal();
+      S.view = new Date(v.getFullYear(), v.getMonth() + +b.dataset.nav, 1); renderCal();
     }));
     $$(".cal-d:not([disabled])").forEach((b) => {
       b.onclick = () => pickDay(b.dataset.k);
@@ -321,6 +347,7 @@
       if (!validRange(S.ci, k)) return toast("Há datas indisponíveis nesse intervalo.");
       S.co = k;
     }
+    navigator.vibrate?.(8);
     renderBook();
   }
 
@@ -343,7 +370,7 @@
       b.disabled = d < 0 ? S.g[g] <= (g === "ad" ? 1 : 0) : g === "bb" ? S.g.bb >= 2 : tot >= max;
     });
   }
-  $$("[data-g]").forEach((b) => (b.onclick = () => { S.g[b.dataset.g] += +b.dataset.d; renderGuests(); renderSummary(); syncBar(); }));
+  $$("[data-g]").forEach((b) => (b.onclick = () => { S.g[b.dataset.g] += +b.dataset.d; renderGuests(); renderSummary(); renderFoot(); syncBar(); }));
 
   function renderSummary() {
     const U = C.unidades[S.unit], el = $("#summary");
@@ -386,8 +413,32 @@
     $$("[data-refocus]").forEach((b) => (b.onclick = () => { if (b.dataset.refocus === "ci") { S.ci = S.co = null; } else S.co = null; renderBook(); }));
   }
 
-  function renderBook() { renderTabs(); renderCal(); renderGuests(); renderSummary(); syncBar(); }
+  function renderFoot() {
+    const f = $("#bookFoot"); if (!f) return;
+    if (S.ci && S.co) {
+      const q = quote(S.unit, S.ci, S.co);
+      f.innerHTML = `<button data-to-guests class="text-left leading-tight"><b class="text-[17px]">${brl(q.total)}</b><span class="block text-xs text-muted underline underline-offset-2">${q.n} noites · ${guestsTxt()}</span></button>
+        <button data-confirm2 class="btn-accent !py-3.5 !px-6">${C.motor === "whatsapp" ? "Solicitar reserva" : "Reservar"}</button>`;
+      $("[data-confirm2]").onclick = confirmBooking;
+    } else {
+      f.innerHTML = `<button data-to-guests class="text-left leading-tight"><b class="text-[15px]">${!S.ci ? "Escolha o check-in" : "Escolha o check-out"}</b><span class="block text-xs text-muted underline underline-offset-2">${guestsTxt()}</span></button>
+        <button class="btn-accent !py-3.5 !px-6 opacity-40" disabled>Continuar</button>`;
+    }
+    $("[data-to-guests]").onclick = () => $("#guestsBox").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  function renderBook() { renderTabs(); renderCal(); renderGuests(); renderSummary(); renderFoot(); syncBar(); }
   $("[data-clear]").onclick = () => { S.ci = S.co = S.hover = null; renderBook(); };
+
+  matchMedia("(max-width:640px)").addEventListener("change", () => { if (stack.includes("book")) renderCal(); });
+
+  // arrastar para fechar o painel no celular
+  (() => {
+    const panel = $(".book-panel"), grip = $(".book-grip"); let y0 = null, dy = 0;
+    grip.addEventListener("pointerdown", (e) => { y0 = e.clientY; dy = 0; panel.style.transition = "none"; grip.setPointerCapture(e.pointerId); });
+    grip.addEventListener("pointermove", (e) => { if (y0 === null) return; dy = Math.max(0, e.clientY - y0); panel.style.transform = `translateY(${dy}px)`; });
+    const end = () => { if (y0 === null) return; panel.style.transition = ""; panel.style.transform = ""; if (dy > 110) closeModal("book"); y0 = null; };
+    grip.addEventListener("pointerup", end); grip.addEventListener("pointercancel", end);
+  })();
 
   // barra do hero + barra mobile
   function syncBar() {
